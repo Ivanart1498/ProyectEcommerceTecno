@@ -76,7 +76,7 @@ public class Producto {
 
     public double setValorTotal(double valorTotal){
 
-        if(valorTotal >= 0) this.valorTotal = valorTotal;
+        if(valorTotal >= 0) this.valorTotal += valorTotal;
         /*excepcion numero negativo
           excepción tipo de dato invalido
          */

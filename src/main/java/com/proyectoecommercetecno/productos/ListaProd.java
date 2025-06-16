@@ -116,9 +116,9 @@ public class ListaProd extends Producto {
 
         for(LineaPedido p : listaPedido) {
 
-            System.out.println("ID: " + p.getID() + "\nNombre: " + p.getNombre() + "\nPrecio Unitario: " + p.getPrecio() + "\nCantidad del ListaProd: " + p.getCantPedido());
+            System.out.println("ID: " + p.getIde() + "\nNombre: " + p.getNombre() + "\nPrecio Unitario: " + p.getPrecio() + "\nCantidad del ListaProd: " + p.getCantPedido());
 
-           vT = CalcularValor();
+           vT += CalcularValor();
         }
 
        System.out.println("Precio Total: $" + vT);
