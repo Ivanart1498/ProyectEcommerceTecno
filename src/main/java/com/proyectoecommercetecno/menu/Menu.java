@@ -48,7 +48,7 @@ public class Menu {
             System.out.println("==============================");
 
             System.out.println("1) Agregar Producto: \n2) Listar Productos: \n3) Buscar/Actualizar Producto: " +
-                    "\n4) Eliminar Producto: \n5) Crear un ListaProd: \n6) Listar Pedidos: \n7) Salir");
+                    "\n4) Eliminar Producto: \n5) Crear un Pedido: \n6) Listar Pedidos: \n7) Salir");
 
             opNum = teclado.nextInt();
 
@@ -131,21 +131,21 @@ public class Menu {
         int op1 = tcl.nextInt();
 
         if(op1 == 1) {
-            System.out.println("Ponga nombre del Producto que desea agregar al ListaProd: ");
+            System.out.println("Ponga nombre del Producto que desea agregar al Pedido: ");
             nom = teclado1.nextLine();
 
 
-            System.out.println("Indicar cantidad de unidades del Producto que desea agregar al ListaProd: ");
+            System.out.println("Indicar cantidad de unidades del Producto que desea agregar al Pedido: ");
             cantidad = tcl.nextInt();
 
             intervMenu.agregarPedido(nom, cantidad);
 
         } else if(op1 == 2) {
-            System.out.println("Indica Id del Producto que desea agregar al ListaProd: ");
+            System.out.println("Indica Id del Producto que desea agregar al Pedido: ");
             Id = tcl.nextInt();
             teclado.nextLine();
 
-            System.out.println("Indicar cantidad de unidades del Producto que desea agregar al ListaProd: ");
+            System.out.println("Indicar cantidad de unidades del Producto que desea agregar al Pedido: ");
             cantidad = tcl.nextInt();
 
             intervMenu.agregarPedido(Id, cantidad);
