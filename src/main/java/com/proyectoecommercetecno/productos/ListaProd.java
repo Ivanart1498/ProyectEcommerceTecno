@@ -1,12 +1,12 @@
-package com.proyectoecommercetecno.pedidos;
+package com.proyectoecommercetecno.productos;
 
-import com.proyectoecommercetecno.productos.Producto;
+import com.proyectoecommercetecno.pedidos.LineaPedido;
 
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.Iterator;
 
-public class Pedido extends Producto {
+public class ListaProd extends Producto {
 
     private ArrayList<Producto> listaProd;
 
@@ -20,7 +20,7 @@ public class Pedido extends Producto {
 
     private double vT;
 
-    public Pedido(){
+    public ListaProd(){
 
         listaProd = new ArrayList<Producto>();
 
@@ -116,7 +116,7 @@ public class Pedido extends Producto {
 
         for(LineaPedido p : listaPedido) {
 
-            System.out.println("ID: " + p.getID() + "\nNombre: " + p.getNombre() + "\nPrecio Unitario: " + p.getPrecio() + "\nCantidad del Pedido: " + p.getCantPedido());
+            System.out.println("ID: " + p.getID() + "\nNombre: " + p.getNombre() + "\nPrecio Unitario: " + p.getPrecio() + "\nCantidad del ListaProd: " + p.getCantPedido());
 
            vT = CalcularValor();
         }
