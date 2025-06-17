@@ -1,8 +1,10 @@
 package com.proyectoecommercetecno.productos;
 
+import com.proyectoecommercetecno.excepciones.*;
 import com.proyectoecommercetecno.pedidos.LineaPedido;
 
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.util.Iterator;
 
@@ -20,6 +22,8 @@ public class ListaProd extends Producto {
 
     private double vT;
 
+    private boolean encontrado;
+
     public ListaProd(){
 
         listaProd = new ArrayList<Producto>();
@@ -30,7 +34,21 @@ public class ListaProd extends Producto {
 
     }
 
+    public ArrayList<Producto> getListaProd() {
+        return listaProd;
+    }
+
     public void agregarProducto (String nombre, double precio, int cantStock){
+
+        if (nombre == null || nombre.trim().isEmpty()) {
+            throw new InvalidInputException("El nombre del producto no puede estar vacío.");
+        }
+        if (precio < 0) {
+            throw new InvalidInputException("El precio del producto no puede ser negativo.");
+        }
+        if (cantStock < 0) {
+            throw new InvalidInputException("La cantidad de stock no puede ser negativa.");
+        }
 
         Producto producto = new Producto(nombre, precio, cantStock);
 
@@ -38,47 +56,72 @@ public class ListaProd extends Producto {
     }
 
 
-    public void agregarPedido (String nombre, int CantPedido){
+    public void agregarPedido (String nombre, int CantPedido) throws ProductNoEncontradoException, InvalidQuantityException, StockInsuficienteException {
+        if (nombre == null || nombre.trim().isEmpty()) {
+            throw new InvalidInputException("El nombre del producto para el pedido no puede estar vacío.");
+        } else if (CantPedido < 0) {
+            throw new InvalidInputException("La cantidad de unidades en el pedido no puede ser negativa.");
+        } else {
 
-        pedido = new LineaPedido(nombre, CantPedido);
+            pedido = new LineaPedido(nombre, CantPedido);
 
-        for (Producto p : listaProd){
+            encontrado = false;
+            for (Producto p : listaProd) {
 
-            if(pedido.getNombre().equalsIgnoreCase(p.getNombre())){
+                if (pedido.getNombre().equalsIgnoreCase(p.getNombre())) {
+                    encontrado = true;
+                    if (p.getCantStock() < CantPedido) {
+                        throw new StockInsuficienteException(
+                                "No hay suficiente stock para " + p.getNombre() + ". Stock disponible: " + p.getCantStock(),
+                                nombre, CantPedido, p.getCantStock()
+                        );
+                    }
 
-                p.setCantStock(p.getCantStock() - pedido.getCantPedido());
+                    p.setCantStock(p.getCantStock() - pedido.getCantPedido());
 
-                LineaPedido pedido1 = new LineaPedido(p.getNombre(),  p.getPrecio(), p.getCantStock(), p.getID(), pedido.getCantPedido());
+                    LineaPedido pedido1 = new LineaPedido(p.getNombre(), p.getPrecio(), p.getCantStock(), p.getID(), pedido.getCantPedido());
 
-                listaPedido.add(pedido1);
+                    listaPedido.add(pedido1);
 
+
+                }
 
             }
 
-            //poner excepción elemento no encontrado
 
+            if (!encontrado) {
+                throw new ProductNoEncontradoException("Producto '" + nombre + "' no encontrado para agregar al pedido.", nombre);
+            }
         }
-
     }
 
-    public void agregarPedido (int Id, int CantPedido){
+    public void agregarPedido (int Id, int CantPedido) throws ProductNoEncontradoException, InvalidQuantityException{
+        if (CantPedido < 0) {
+            throw new InvalidInputException("La cantidad de unidades en el pedido debe ser positiva.");
+        } else {
 
-        pedido = new LineaPedido(Id, CantPedido);
+            pedido = new LineaPedido(Id, CantPedido);
 
-        for (Producto p : listaProd){
+            encontrado = false;
+            for (Producto p : listaProd) {
+                encontrado = true;
 
-            if(pedido.getIde() == p.getID()){
+                if (pedido.getIde() == p.getID()) {
 
-                p.setCantStock(p.getCantStock() - pedido.getCantPedido());
+                    p.setCantStock(p.getCantStock() - pedido.getCantPedido());
 
-                LineaPedido pedido1 = new LineaPedido(p.getNombre(),  p.getPrecio(), p.getCantStock(), p.getID(), pedido.getCantPedido());
+                    LineaPedido pedido1 = new LineaPedido(p.getNombre(), p.getPrecio(), p.getCantStock(), p.getID(), pedido.getCantPedido());
 
-                listaPedido.add(pedido1);
+                    listaPedido.add(pedido1);
 
 
+                }
+
+                if (!encontrado) {
+                    throw new ProductNoEncontradoException("Producto no encontrado para agregar al pedido.", String.valueOf(Id));
+                }
             }
 
-            //poner excepción elemento no encontrado
         }
 
     }
@@ -97,72 +140,83 @@ public class ListaProd extends Producto {
 
     }
 
-    public void mostrarTotalProductos (){
+    public void mostrarTotalProductos () throws EmptyListException {
 
-        //excepcion de lista vacia
+        if (listaProd.isEmpty()) {
+            throw new EmptyListException("La lista de productos está vacía.");
+        } else {
 
-        for(Producto p : listaProd) {
+            System.out.println("Lista de Pedidos.");
+            for (Producto p : listaProd) {
 
-            System.out.println("ID: " + p.getID() + "\nNombre: " + p.getNombre() + "\nPrecio: " + p.getPrecio() + "\nCantidad de Stock: " + p.getCantStock());
+                System.out.println("ID: " + p.getID() + "\nNombre: " + p.getNombre() + "\nPrecio: " + p.getPrecio() + "\nCantidad de Stock: " + p.getCantStock());
+
+            }
 
         }
     }
 
 
 
-    public void mostrarPedido(){
+    public void mostrarPedido() throws EmptyListException {
+        if (listaProd.isEmpty()) {
+            throw new EmptyListException("La lista de productos está vacía.");
+        } else {
 
-        //excepcion de lista vacia
+            System.out.println("Lista de Pedidos.");
 
-        for(LineaPedido p : listaPedido) {
+            for (LineaPedido p : listaPedido) {
 
-            System.out.println("ID: " + p.getIde() + "\nNombre: " + p.getNombre() + "\nPrecio Unitario: " + p.getPrecio() + "\nCantidad del ListaProd: " + p.getCantPedido());
+                System.out.println("Nombre: " + p.getNombre() + "\nPrecio Unitario: " + p.getPrecio() + "\nCantidad del ListaProd: " + p.getCantPedido());
 
-           vT += CalcularValor();
+                vT += CalcularValor();
+            }
+
+            System.out.println("Precio Total: $" + vT);
+
         }
-
-       System.out.println("Precio Total: $" + vT);
     }
 
-    public void buscarProductosId(int Id){
+    public Producto buscarProductosId(int Id) throws ProductNoEncontradoException, InvalidQuantityException{
 
-        //excepcion de producto no encontrado
 
         for(Producto p : listaProd){
             if(Id == p.getID()){
+                System.out.println("Producto Encontrado:");
                 System.out.println("ID: " + p.getID() + "\nNombre: " + p.getNombre() + "\nPrecio: "
                         + p.getPrecio() + "\nCantidad de Stock: " + p.getCantStock());
 
-                    opcionesExtra(p.getID());
+                    return p;
 
             }
         }
-
+        throw new ProductNoEncontradoException("Producto no encontrado.", String.valueOf(Id));
     }
 
-    public void buscarProductosNombre(String nombre){
+    public Producto buscarProductosNombre(String nombre) throws ProductNoEncontradoException, InvalidQuantityException{
+        if (nombre == null || nombre.trim().isEmpty()) {
+            throw new InvalidInputException("El nombre del producto para el pedido no puede estar vacío.");
+        } else {
 
-        //excepcion de producto no encontrado
+            for (Producto p : listaProd) {
 
-        for(Producto p: listaProd){
+                if (nombre.equalsIgnoreCase(p.getNombre())) {
+                    System.out.println("ID: " + p.getID() + "\nNombre: " + p.getNombre() + "\nPrecio: "
+                            + p.getPrecio() + "\nCantidad de Stock: " + p.getCantStock());
 
-            if(nombre.equalsIgnoreCase(p.getNombre())){
-                System.out.println("ID: " + p.getID() + "\nNombre: " + p.getNombre() + "\nPrecio: "
-                        + p.getPrecio() + "\nCantidad de Stock: " + p.getCantStock());
-
-                opcionesExtra(p.getID());
+                    return p;
+                }
             }
+            throw new ProductNoEncontradoException("Producto '" + nombre + "' no encontrado.", nombre);
         }
-
-
     }
 
-    public void opcionesExtra(int Id){
+    public void opcionesExtra(Producto p){
         System.out.println("¿Desea modificar el precio?");
         opc = tcl.next();
 
         if (opc.equalsIgnoreCase("Si")) {
-            modificarPrecio(Id);
+            modificarPrecio(p);
         }
 
         System.out.println("¿Desea modificar el Stock?");
@@ -171,62 +225,77 @@ public class ListaProd extends Producto {
 
         if (opc.equalsIgnoreCase("Si")) {
 
-            modificarStock(Id);
+            modificarStock(p);
         }
     }
 
-    public void modificarPrecio(int Id){
+    public void modificarPrecio(Producto p){
 
-       for(Producto p: listaProd) {
-
-           if(Id == p.getID()) {
-               System.out.println("Precio: ");
-               p.setPrecio(tcl.nextDouble());
-               //excepcion de tipo de numero
-           }
-       }
+        System.out.println("Ingrese el nuevo precio para " + p.getNombre() + ": ");
+        double nuevoPrecio = 0.0;
+        try {
+            nuevoPrecio = tcl.nextDouble();
+            p.setPrecio(nuevoPrecio); // El setter de Producto lanza InvalidInputException si es negativo
+            System.out.println("Precio actualizado con éxito para " + p.getNombre() + ".");
+        } catch (InputMismatchException e) {
+            System.err.println("Error: El precio debe ser un número válido.");
+            tcl.nextLine(); // Consumir el salto de línea
+        } catch (InvalidInputException e) {
+            System.err.println("Error al modificar precio: " + e.getMessage());
+        }
     }
 
-    public void modificarStock(int Id) {
-        for(Producto p: listaProd) {
-            if(Id == p.getID()){
-                System.out.println("Cantidad de Stock: ");
-                p.setCantStock(tcl.nextInt());
-            }
+    public void modificarStock(Producto p) {
+        System.out.println("Ingrese la nueva cantidad de Stock para " + p.getNombre() + ": ");
+        int nuevaCantidad = 0;
+        try {
+            nuevaCantidad = tcl.nextInt();
+            p.setCantStock(nuevaCantidad); // El setter de Producto lanza InvalidInputException si es negativo
+            System.out.println("Stock actualizado con éxito para " + p.getNombre() + ".");
+        } catch (InputMismatchException e) {
+            System.err.println("Error: La cantidad de stock debe ser un número entero.");
+            tcl.nextLine(); // Consumir el salto de línea
+        } catch (InvalidInputException e) {
+            System.err.println("Error al modificar stock: " + e.getMessage());
         }
 
     }
 
 
-    public void eliminarProducto (int Id){
+    public void eliminarProducto (int Id) throws ProductNoEncontradoException{
 
-        //excepcion de producto no encontrado
-
-        for(Producto p : listaProd){
-            if(Id == p.getID()){
-                System.out.println("ID: " + p.getID() + "\nNombre: " + p.getNombre() + "\nPrecio: "
-                        + p.getPrecio() + "\nCantidad de Stock: " + p.getCantStock());
-
-            }
+        Producto productoAEliminar = new Producto();
+        try {
+            productoAEliminar = buscarProductosId(Id);
+        } catch (ProductNoEncontradoException e){
+            throw e;
         }
-        System.out.println();
-        //tcl.nextLine();
+
+        System.out.println("ID: " + productoAEliminar.getID() + "\nNombre: " + productoAEliminar.getNombre() + "\nPrecio: "
+                + productoAEliminar.getPrecio() + "\nCantidad de Stock: " + productoAEliminar.getCantStock());
         System.out.println("Esta seguro de eliminar este elemento:");
-        opc = tcl.nextLine();
+        opc = tcl.next();
 
         if(opc.equalsIgnoreCase("Si")) {
 
             Iterator<Producto> it = listaProd.iterator();
-            
+            boolean removido = false;
+
             while (it.hasNext()){
                 Producto p = it.next();
                 if(p.getID() == Id){
+
                     it.remove();
+                    removido = true;
+                    break;
                 }
             }
 
-            System.out.println("¡Operación exitosa!");
+            if(removido)System.out.println("¡Operación exitosa!");
+            else System.err.println("Error inesperado al eliminar el producto.");
 
+        }else {
+            System.out.println("Operación de eliminación cancelada.");
         }
     }
 

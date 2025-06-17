@@ -62,24 +62,19 @@ public class Producto {
     public void setPrecio(double precio) {
 
         if(precio >= 0) this.precio = precio;
-        else System.out.println("Error. El valor ingresado es invalido.");
+
     }
 
     public void setCantStock(int cantStock) {
 
         if(cantStock >= 0) this.cantStock = cantStock;
-        else System.out.println("Error. El valor ingresado es invalido.");
-        /*excepcion numero negativo
-          excepción tipo de dato invalido
-         */
+
+
     }
 
     public double setValorTotal(double valorTotal){
 
         if(valorTotal >= 0) this.valorTotal += valorTotal;
-        /*excepcion numero negativo
-          excepción tipo de dato invalido
-         */
         return valorTotal;
     }
 
